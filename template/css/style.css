@@ -112,6 +112,10 @@ th {
   border: #e0e0e0 1px solid;
 }
 
+table tr:nth-of-type(even) {
+  background: #F9F9F9;
+}
+
 td {
   vertical-align: top;
   padding: 10px 8px 0 8px;
