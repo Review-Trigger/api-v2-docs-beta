@@ -6,7 +6,7 @@ define({ "api": [
     "type": "get|post|put|delete",
     "url": "/secure_endpoint",
     "title": "",
-    "description": "<p>Some endpoints require an extra level of security for authentication and authorization, the signed header:</p> <p><code>Authorization: api_token:api_signature</code></p> <p><code>api_signature</code> is built by concatenating a series of strings containing request information that will allow the API to authorize and authenticate the request. Refer to the tables below for data definition.</p> <p>To create the signature, the following steps are needed:</p> <ol> <li>Format the request parameters as a querystring with it's keys underscored: <code>&quot;key_1=value1&amp;key_2=value2...&amp;key_n=valuen&quot;</code>. This is the content string.</li> <li>Calculate the MD5 hash of the content string.</li> <li>Create the canonical string: <code>http_verb</code> + <code>&quot;\\n&quot;</code> + <code>content_string_md5</code> + <code>&quot;\\n&quot;</code> + <code>content_type</code> + <code>&quot;\\n&quot;</code> + <code>request_uri</code> + <code>&quot;\\n&quot;</code> + timestamp + <code>&quot;\\n&quot;</code></li> <li>Create the signature string by generating the Base64 url-encoded HMAC-SHA1 of the canonical string, hence generating a different signature for every request. The system calculates the signature for the incoming request. If there's a match, the requester demonstrates that they have access to the secret key, and the request is processed by the authority and the identity of the developer to whom the secret key was issued.</li> </ol>",
+    "description": "<p>Some endpoints require an extra level of security for authentication and authorization, the signed header:</p> <p><code>Authorization: api_token:api_signature</code></p> <p><code>api_signature</code> is built by concatenating a series of strings containing request information that will allow the API to authorize and authenticate the request. Refer to the tables below for data definition.</p> <p>To create the signature, the following steps are needed:</p> <ol> <li>Format the request parameters as a querystring with it's keys underscored: <code>&quot;key_1=value1&amp;key_2=value2...&amp;key_n=valuen&quot;</code>. This is the content string. If the request does not include parameters (such as with index calls), go to step 3.</li> <li>Calculate the MD5 hash of the content string.</li> <li>Create the canonical string: <code>http_verb</code> + <code>&quot;\\n&quot;</code> + <code>content_string_md5</code> + <code>&quot;\\n&quot;</code> + <code>content_type</code> + <code>&quot;\\n&quot;</code> + <code>request_uri</code> + <code>&quot;\\n&quot;</code> + timestamp + <code>&quot;\\n&quot;</code></li> <li>Create the signature string by generating the Base64 url-encoded HMAC-SHA1 of the canonical string, hence generating a different signature for every request. The system calculates the signature for the incoming request. If there's a match, the requester demonstrates that they have access to the secret key, and the request is processed by the authority and the identity of the developer to whom the secret key was issued.</li> </ol>",
     "parameter": {
       "fields": {
         "Parameter": [
@@ -71,7 +71,7 @@ define({ "api": [
     "examples": [
       {
         "title": "PHP example",
-        "content": "\n# Step 0: Set the credentials and timestamp to use in the signature and headers:\n$api_token = 'API_TOKEN';\n$api_secret = 'API_SECRET';\n$timestamp = date(DATE_RFC822);\n\n# Step 1: Turn request JSON into a querystring sorted alphabetically by keys:\n$request_data = array(\n  'profile' => array(\n    'name' => 'My Business',\n    'shortname' => 'mybiz123'\n  )\n)\n$content_string = http_build_query($request_data);\n\n# Step 2: Calculate MD5 Hash for step 1 result:\n$content_string_md5 = md5($content_string);\n\n# Step 3: Create canonical string:\n$canonical_string = implode('\\n', array(\n  'POST', # http verb for RESTful #create actions\n  $content_string_md5, # md5 for the content string\n  'application/json', # content type, should be included as a header\n  '/api/v2/profiles', # endpoint path\n  $timestamp # timestamp for the request, should be included in the API-Request-Timestamp header\n));\n\n# Step 4: Create the signature using your api_secret:\n$signature = base64_encode(hash_hmac('sha256', $canonical_string, $api_secret, true));\n\n# Step 5: Execute a CURL request, for example:\n$ch = curl_init();\ncurl_setopt($ch, CURLOPT_HTTPHEADER, array(\n  'Content-Type: application/json',\n  'API-Request-Timestamp: '.$timestamp,\n  'Authorization: '.$api_token.':'.$signature\n));\ncurl_setopt($ch, CURLOPT_POST, 1);\ncurl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($request_data));\ncurl_setopt($ch, CURLOPT_URL, 'https://www.grade.us/api/v2/profiles');\n$response = curl_exec($ch);\ncurl_close($ch);",
+        "content": "\n# Step 0: Set the credentials and timestamp to use in the signature and headers:\n$api_token = \"01ae872ba2ae47cc88952dcbe053ed0a\";\n$api_secret = \"a091892b17d64e659d0916dc1a2a649f\";\n$date = new DateTime;\n$timestamp = $date->format(DateTime::RFC822);\n# Step 1: Turn request JSON into a querystring sorted alphabetically by keys:\necho \"step 1 content string\\n\";\n$request_data = array(\n  'subuser' => array(\n    'email' => \"jane-01@example.com\",\n    'first_name' => \"Jane\",\n    'last_name' => \"Doe\",\n    'profile_uuid' =>  array('058ad5ec-a534-4ff7-a4a1-af83635a4566'),\n    'permissions' => array('client'),\n    'custom_permissions' => array('funnel', 'widgets', 'invites', 'support')\n  )\n);\n$content_string = http_build_query($request_data);\necho \"content string\";\necho $content_string;\necho \"\\n\\n\";\n# IMPORTANT: php querystring's construction adds array indexes to the querystring. Remove them in this step:\n$needles = array('/\\%5B\\d\\%5D/', '/\\%5B\\d\\d\\%5D/');\necho \"clean content string\\n\";\necho $content_string = preg_replace($needles, '%5B%5D', $content_string);\necho \"\\n\\n\";\n# Step 2: Calculate MD5 Hash for step 1 result:\necho \"step 2 content md5\\n\";\necho $content_string_md5 = hash('md5', utf8_encode($content_string));\necho \"\\n\\n\";\n# Step 3: Create canonical string:\necho \"step 3 canonical\\n\";\necho $canonical_string = implode('\\n', array(\n  'POST', # http verb for RESTful #create actions\n  $content_string_md5, # md5 for the content string\n  'application/json', # content type, should be included as a header\n  '/api/v2/subusers', # endpoint path\n  $timestamp # timestamp for the request, should be included in the API-Request-Timestamp header\n));\necho \"\\n\\n\";\n# Step 4: Create the signature using your api_secret:\necho \"step 4 signature\\n\";\necho $signature = base64_encode(hash_hmac('sha256', $canonical_string, $api_secret, true));\necho \"\\n\\n\";\n# Step 5: Execute a CURL request, for example:\necho \"step 5\\n\";\n$ch = curl_init();\ncurl_setopt($ch, CURLOPT_HTTPHEADER, array(\n  'Content-Type: application/json',\n  'API-Request-Timestamp: '.$timestamp,\n  'Authorization: '.$api_token.':'.$signature\n));\ncurl_setopt($ch, CURLOPT_POST, 1);\ncurl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($request_data));\ncurl_setopt($ch, CURLOPT_URL, 'https://www.grade.us/api/v2/subusers');\n$response = curl_exec($ch);\ncurl_close($ch);",
         "type": "php"
       },
       {
@@ -1371,6 +1371,13 @@ define({ "api": [
           },
           {
             "group": "Parameter",
+            "type": "Array",
+            "optional": false,
+            "field": "profile_uuid",
+            "description": "<p>Array of profile uuids that will be made accessible to the subuser</p>"
+          },
+          {
+            "group": "Parameter",
             "type": "String",
             "optional": true,
             "field": "first_name",
@@ -1389,13 +1396,6 @@ define({ "api": [
             "optional": true,
             "field": "belongs_to_domain",
             "description": "<p>Domain to associate subuser under</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "Array",
-            "optional": true,
-            "field": "profile_uuid",
-            "description": "<p>Array of profile uuids that will be made accessible to the subuser</p>"
           },
           {
             "group": "Parameter",
