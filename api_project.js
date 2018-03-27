@@ -1,16 +1,1 @@
-define({
-  "name": "Grade.us API",
-  "version": "2.0.0",
-  "description": "Documentation for Grade.us API",
-  "title": "Grade.us - API v. 2.0 Docs",
-  "url": "https://www.grade.us/api/v2",
-  "sampleUrl": false,
-  "defaultVersion": "0.0.0",
-  "apidoc": "0.3.0",
-  "generator": {
-    "name": "apidoc",
-    "time": "2018-03-07T16:42:27.803Z",
-    "url": "http://apidocjs.com",
-    "version": "0.17.6"
-  }
-});
+define({  "name": "Grade.us API",  "version": "2.0.0",  "description": "Documentation for Grade.us API",  "title": "Grade.us - API v. 2.0 Docs",  "url": "https://www.grade.us/api/v2",  "sampleUrl": false,  "defaultVersion": "0.0.0",  "apidoc": "0.3.0",  "generator": {    "name": "apidoc",    "time": "2018-03-27T22:45:08.477Z",    "url": "http://apidocjs.com",    "version": "0.17.5"  }});
