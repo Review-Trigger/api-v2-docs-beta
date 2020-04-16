@@ -1,15 +1,15 @@
-# Grade.us API docs
+# Review Trigger API docs
 
-## apidoc Install 
-You can add apidoc to your local machine simple using npm: 
+## apidoc Install
+You can add apidoc to your local machine simple using npm:
 
 `npm install -g apidoc`
 
-After this you should be able to run `apidoc` command inside grade.us repo, in order to generate docs:
+After this you should be able to run `apidoc` command inside Review Trigger repo, in order to generate docs:
 
 ## Running apidoc
 
-You can run it simply by typing following command on command line, once inside grade.us project:
+You can run it simply by typing following command on command line, once inside Review Trigger project:
 
 ` apidoc -i app/controllers/api/...path to your controllers/ -o ../api-v2-docs-beta/...subfolder.../  -t ../api-v2-docs-beta/template`
 
